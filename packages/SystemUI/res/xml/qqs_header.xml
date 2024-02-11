@@ -25,7 +25,8 @@
         android:id="@+id/clock">
         <Layout
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/large_screen_shade_header_min_height"
+            android:layout_height="@dimen/new_qs_header_non_clickable_element_height"
+            android:layout_marginTop="@dimen/qqs_header_offset_top"
             app:layout_constraintStart_toStartOf="@id/begin_guide"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/qqs_header_bottom_guideline"
@@ -45,6 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/new_qs_header_non_clickable_element_height"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/qqs_header_offset_top"
             app:layout_constrainedWidth="true"
             app:layout_constraintStart_toEndOf="@id/clock"
             app:layout_constraintEnd_toStartOf="@id/barrier"
@@ -58,6 +60,7 @@
         <Layout
             android:layout_width="wrap_content"
             android:layout_height="@dimen/new_qs_header_non_clickable_element_height"
+            android:layout_marginTop="@dimen/qqs_header_offset_top"
             app:layout_constraintHeight_min="@dimen/new_qs_header_non_clickable_element_height"
             app:layout_constraintStart_toEndOf="@id/date"
             app:layout_constraintEnd_toEndOf="@id/end_guide"
@@ -71,9 +74,9 @@
     <Constraint
         android:id="@+id/carrier_group">
         <Layout
-            app:layout_constraintWidth_min="48dp"
+            app:layout_constraintWidth_min="@dimen/qqs_header_offset_top"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/large_screen_shade_header_min_height"
+            android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
@@ -86,12 +89,26 @@
         android:id="@+id/privacy_container">
         <Layout
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/large_screen_shade_header_min_height"
+            android:layout_height="@dimen/new_qs_header_non_clickable_element_height"
             app:layout_constraintStart_toEndOf="@id/date"
             app:layout_constraintEnd_toEndOf="@id/end_guide"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/qqs_header_bottom_guideline"
             app:layout_constraintHorizontal_bias="1"
         />
+    </Constraint>
+    
+    <Constraint
+        android:id="@+id/qs_controls_container">
+        <Layout
+            android:layout_marginTop="-64dp"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/qs_controls_center_height"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/clock"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+        <PropertySet
+            android:alpha="1" />
     </Constraint>
 </ConstraintSet>

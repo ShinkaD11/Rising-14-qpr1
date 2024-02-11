@@ -183,6 +183,7 @@ public class NotificationMediaManager implements Dumpable {
 
     private String mNowPlayingNotificationKey;
     private String mNowPlayingTrack;
+    private MediaSession.Token mNowPlayingToken;
 
     private BackDropView mBackdrop;
     private ImageView mBackdropFront;
@@ -450,6 +451,10 @@ public class NotificationMediaManager implements Dumpable {
     public MediaMetadata getMediaMetadata() {
         return mMediaMetadata;
     }
+    
+    public MediaController getMediaController() {
+        return mMediaController;
+    }
 
     public Icon getMediaIcon() {
         if (mMediaNotificationKey == null) {
@@ -459,6 +464,14 @@ public class NotificationMediaManager implements Dumpable {
             .map(entry -> entry.getIcons().getShelfIcon())
             .map(StatusBarIconView::getSourceIcon)
             .orElse(null);
+    }
+    
+    public int getMediaBgColor() {
+        return mColorExtractor.getMediaBackgroundColor();
+    }
+    
+    public MediaSession.Token getMediaToken() {
+        return mNowPlayingToken;
     }
 
     public void addCallback(MediaListener callback) {
@@ -511,6 +524,7 @@ public class NotificationMediaManager implements Dumpable {
                 final MediaSession.Token token =
                         entry.getSbn().getNotification().extras.getParcelable(
                                 Notification.EXTRA_MEDIA_SESSION, MediaSession.Token.class);
+                mNowPlayingToken = token;
                 if (token != null) {
                     MediaController aController = new MediaController(mContext, token);
                     if (PlaybackState.STATE_PLAYING
@@ -600,7 +614,7 @@ public class NotificationMediaManager implements Dumpable {
                 && state != PlaybackState.STATE_NONE;
     }
 
-    private boolean sameSessions(MediaController a, MediaController b) {
+    public boolean sameSessions(MediaController a, MediaController b) {
         if (a == b) {
             return true;
         }
@@ -610,7 +624,7 @@ public class NotificationMediaManager implements Dumpable {
         return a.controlsSameSession(b);
     }
 
-    private int getMediaControllerPlaybackState(MediaController controller) {
+    public int getMediaControllerPlaybackState(MediaController controller) {
         if (controller != null) {
             final PlaybackState playbackState = controller.getPlaybackState();
             if (playbackState != null) {

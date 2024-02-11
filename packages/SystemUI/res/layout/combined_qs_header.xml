@@ -162,4 +162,17 @@ frame when animating QS <-> QQS transition
 
     </FrameLayout>
 
+    <LinearLayout
+        android:id="@+id/qs_controls_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/qs_controls_center_height"
+        app:layout_constraintStart_toStartOf="@id/begin_guide"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/date"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <include layout="@layout/qs_controls_layout" />
+
+    </LinearLayout>
+
 </com.android.systemui.util.NoRemeasureMotionLayout>

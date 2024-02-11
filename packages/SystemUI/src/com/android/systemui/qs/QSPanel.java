@@ -540,37 +540,6 @@ public class QSPanel extends LinearLayout {
         switchToParent(child, parent, index, getDumpableTag());
     }
 
-    /** Call when orientation has changed and MediaHost needs to be adjusted. */
-    private void reAttachMediaHost(ViewGroup hostView, boolean horizontal) {
-        if (!mUsingMediaPlayer) {
-            return;
-        }
-        mMediaHostView = hostView;
-        ViewGroup newParent = horizontal ? mHorizontalLinearLayout : this;
-        ViewGroup currentParent = (ViewGroup) hostView.getParent();
-        Log.d(getDumpableTag(), "Reattaching media host: " + horizontal
-                + ", current " + currentParent + ", new " + newParent);
-        if (currentParent != newParent) {
-            if (currentParent != null) {
-                currentParent.removeView(hostView);
-            }
-            newParent.addView(hostView);
-            LinearLayout.LayoutParams layoutParams = (LayoutParams) hostView.getLayoutParams();
-            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            layoutParams.width = horizontal ? 0 : ViewGroup.LayoutParams.MATCH_PARENT;
-            layoutParams.weight = horizontal ? 1f : 0;
-            // Add any bottom margin, such that the total spacing is correct. This is only
-            // necessary if the view isn't horizontal, since otherwise the padding is
-            // carried in the parent of this view (to ensure correct vertical alignment)
-            layoutParams.bottomMargin = !horizontal || displayMediaMarginsOnMedia()
-                    ? Math.max(mMediaTotalBottomMargin - getPaddingBottom(), 0) : 0;
-            layoutParams.topMargin = mediaNeedsTopMargin() && !horizontal
-                    ? mMediaTopMargin : 0;
-            // Call setLayoutParams explicitly to ensure that requestLayout happens
-            hostView.setLayoutParams(layoutParams);
-        }
-    }
-
     public void setExpanded(boolean expanded) {
         if (mExpanded == expanded) return;
         mExpanded = expanded;
@@ -705,7 +674,6 @@ public class QSPanel extends LinearLayout {
             if (mBrightnessRunnable != null) {
                 mBrightnessRunnable.run();
             }
-            reAttachMediaHost(mediaHostView, horizontal);
             if (needsDynamicRowsAndColumns()) {
                 mTileLayout.setMinRows(horizontal ? 2 : 1);
                 mTileLayout.setMaxColumns(horizontal ? 2 : 6);
