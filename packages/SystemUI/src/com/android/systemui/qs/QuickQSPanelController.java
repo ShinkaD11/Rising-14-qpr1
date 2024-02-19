@@ -42,7 +42,6 @@ import com.android.systemui.settings.brightness.BrightnessController;
 import com.android.systemui.settings.brightness.BrightnessMirrorHandler;
 import com.android.systemui.settings.brightness.BrightnessSliderController;
 import com.android.systemui.statusbar.policy.BrightnessMirrorController;
-import com.android.systemui.tuner.TunerService;
 import com.android.systemui.util.settings.SystemSettings;
 
 import java.util.ArrayList;
@@ -58,7 +57,6 @@ public class QuickQSPanelController extends QSPanelControllerBase<QuickQSPanel> 
 
     private final Provider<Boolean> mUsingCollapsedLandscapeMediaProvider;
     private final BrightnessController mBrightnessController;
-    private final TunerService mTunerService;
     private final BrightnessSliderController mBrightnessSliderController;
     private final BrightnessMirrorHandler mBrightnessMirrorHandler;
     private BrightnessMirrorController mBrightnessMirrorController;
@@ -74,14 +72,12 @@ public class QuickQSPanelController extends QSPanelControllerBase<QuickQSPanel> 
             DumpManager dumpManager,
             @Main Handler mainHandler,
             SystemSettings systemSettings,
-            TunerService tunerService,
             BrightnessController.Factory brightnessControllerFactory,
             BrightnessSliderController.Factory brightnessSliderFactory
     ) {
         super(view, qsHost, qsCustomizerController, usingMediaPlayer, mediaHost, metricsLogger,
                 uiEventLogger, qsLogger, dumpManager, mainHandler, systemSettings);
         mUsingCollapsedLandscapeMediaProvider = usingCollapsedLandscapeMediaProvider;
-        mTunerService = tunerService;
 
         mBrightnessSliderController = brightnessSliderFactory.create(getContext(), mView);
         mView.setBrightnessView(mBrightnessSliderController.getRootView());
@@ -131,7 +127,6 @@ public class QuickQSPanelController extends QSPanelControllerBase<QuickQSPanel> 
     @Override
     protected void onViewDetached() {
         super.onViewDetached();
-        mTunerService.removeTunable(mView);
         mView.setBrightnessRunnable(null);
         mBrightnessMirrorHandler.onQsPanelDettached();
     }

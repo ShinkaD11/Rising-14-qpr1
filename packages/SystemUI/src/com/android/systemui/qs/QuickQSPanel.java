@@ -32,12 +32,11 @@ import com.android.systemui.plugins.qs.QSTile;
 import com.android.systemui.plugins.qs.QSTile.SignalState;
 import com.android.systemui.plugins.qs.QSTile.State;
 import com.android.systemui.qs.logging.QSLogger;
-import com.android.systemui.tuner.TunerService;
 
 /**
  * Version of QSPanel that only shows N Quick Tiles in the QS Header.
  */
-public class QuickQSPanel extends QSPanel implements TunerService.Tunable {
+public class QuickQSPanel extends QSPanel {
 
     private static final String TAG = "QuickQSPanel";
     // A fallback value for max tiles number when setting via Tuner (parseNumTiles)
@@ -45,39 +44,12 @@ public class QuickQSPanel extends QSPanel implements TunerService.Tunable {
 
     private boolean mDisabledByPolicy;
     private int mMaxTiles;
-    private boolean mShowQqsBrightnessSlider;
+    private boolean mShowQqsBrightnessSlider = false;
 
     public QuickQSPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         mMaxTiles = getResources().getInteger(R.integer.quick_qs_panel_max_tiles);
-        
-        TunerService.Tunable tunable = (key, newValue) -> {
-            switch (key) {
-                case QS_SHOW_AUTO_BRIGHTNESS:
-                     mShouldShowAutoBrightness = TunerService.parseIntegerSwitch(newValue, true);
-                    if (mAutoBrightnessView != null) {
-                        mAutoBrightnessView.setVisibility(mShouldShowAutoBrightness
-                                 ? View.VISIBLE : View.GONE);
-                    }
-                    break;
-                case QS_SHOW_BRIGHTNESS_SLIDER:
-                    mShowQqsBrightnessSlider =
-                           TunerService.parseInteger(newValue, 1) == 2;
-                    if (mBrightnessView != null) {
-                        mBrightnessView.setVisibility(mShowQqsBrightnessSlider ? VISIBLE : GONE);
-                        updatePadding();
-                    }
-                    break;
-                case QS_BRIGHTNESS_SLIDER_POSITION:
-                    mTop = TunerService.parseInteger(newValue, 0) == 0;
-                    updatePadding();
-                    break;
-                default:
-                    break;
-             }
-        };
-        Dependency.get(TunerService.class).addTunable(tunable, QS_BRIGHTNESS_SLIDER_POSITION, QS_SHOW_BRIGHTNESS_SLIDER);
-        Dependency.get(TunerService.class).addTunable(tunable, QS_TILE_ANIMATION_STYLE, QS_TILE_ANIMATION_DURATION, QS_TILE_ANIMATION_INTERPOLATOR);
+        mShouldShowAutoBrightness = false;
     }
 
     @Override
@@ -188,11 +160,6 @@ public class QuickQSPanel extends QSPanel implements TunerService.Tunable {
 
     public void setMaxTiles(int maxTiles) {
         mMaxTiles = maxTiles;
-    }
-
-    @Override
-    public void onTuningChanged(String key, String newValue) {
-
     }
 
     public int getNumQuickTiles() {

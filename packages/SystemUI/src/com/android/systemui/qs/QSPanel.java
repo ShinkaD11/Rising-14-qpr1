@@ -103,15 +103,15 @@ public class QSPanel extends LinearLayout {
 
     protected Runnable mBrightnessRunnable;
 
-    protected boolean mTop;
+    protected boolean mTop = false;
 
     /** Whether or not the QS media player feature is enabled. */
     protected boolean mUsingMediaPlayer;
 
     protected boolean mExpanded;
     protected boolean mListening;
-    protected boolean mShouldShowAutoBrightness = true;
-    protected boolean mShowQsBrightnessSlider = true;
+    protected boolean mShouldShowAutoBrightness = false;
+    protected boolean mShowQsBrightnessSlider = false;
 
     private final List<OnConfigurationChangedListener> mOnConfigurationChangedListeners =
             new ArrayList<>();
@@ -164,25 +164,6 @@ public class QSPanel extends LinearLayout {
 
         TunerService.Tunable tunable = (key, newValue) -> {
             switch (key) {
-                case QS_SHOW_AUTO_BRIGHTNESS:
-                     mShouldShowAutoBrightness = TunerService.parseIntegerSwitch(newValue, true);
-                    if (mAutoBrightnessView != null) {
-                        mAutoBrightnessView.setVisibility(mShouldShowAutoBrightness
-                                 ? View.VISIBLE : View.GONE);
-                    }
-                    break;
-                case QS_BRIGHTNESS_SLIDER_POSITION:
-                    mTop = TunerService.parseInteger(newValue, 0) == 0;
-                    updatePadding();
-                    break;
-                case QS_SHOW_BRIGHTNESS_SLIDER:
-                    mShowQsBrightnessSlider =
-                           TunerService.parseInteger(newValue, 1) >= 1;
-                    if (mBrightnessView != null) {
-                        mBrightnessView.setVisibility(mShowQsBrightnessSlider ? VISIBLE : GONE);
-                        updatePadding();
-                    }
-                    break;
                 case QS_TILE_ANIMATION_STYLE:
                     mAnimStyle =
                            TunerService.parseInteger(newValue, 0);
@@ -199,7 +180,6 @@ public class QSPanel extends LinearLayout {
                     break;
             }
         };
-        Dependency.get(TunerService.class).addTunable(tunable, QS_SHOW_AUTO_BRIGHTNESS, QS_BRIGHTNESS_SLIDER_POSITION, QS_SHOW_BRIGHTNESS_SLIDER);
         Dependency.get(TunerService.class).addTunable(tunable, QS_TILE_ANIMATION_STYLE, QS_TILE_ANIMATION_DURATION, QS_TILE_ANIMATION_INTERPOLATOR);
     }
 
