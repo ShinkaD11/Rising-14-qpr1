@@ -54,7 +54,6 @@ import com.android.systemui.R;
 import com.android.systemui.plugins.qs.QSTile;
 import com.android.systemui.plugins.qs.QSTileView;
 import com.android.systemui.qs.logging.QSLogger;
-import com.android.systemui.settings.brightness.BrightnessSliderController;
 import com.android.systemui.tuner.TunerService;
 import com.android.systemui.tuner.TunerService.Tunable;
 
@@ -63,13 +62,6 @@ import java.util.List;
 
 /** View that represents the quick settings tile panel (when expanded/pulled down). **/
 public class QSPanel extends LinearLayout {
-
-    public static final String QS_SHOW_AUTO_BRIGHTNESS =
-            "system:" + "qs_show_auto_brightness";
-    public static final String QS_SHOW_BRIGHTNESS_SLIDER =
-            "system:" + "qs_show_brightness_slider";
-    public static final String QS_BRIGHTNESS_SLIDER_POSITION =
-            "system:" + "qs_brightness_slider_position";
 
     public static final String QS_UI_STYLE =
             "system:" + Settings.System.QS_UI_STYLE;
@@ -94,15 +86,6 @@ public class QSPanel extends LinearLayout {
      */
     private int mMovableContentStartIndex;
 
-    @Nullable
-    protected View mBrightnessView;
-    protected View mAutoBrightnessView;
-
-    @Nullable
-    protected BrightnessSliderController mToggleSliderController;
-
-    protected Runnable mBrightnessRunnable;
-
     protected boolean mTop = false;
 
     /** Whether or not the QS media player feature is enabled. */
@@ -110,8 +93,6 @@ public class QSPanel extends LinearLayout {
 
     protected boolean mExpanded;
     protected boolean mListening;
-    protected boolean mShouldShowAutoBrightness = false;
-    protected boolean mShowQsBrightnessSlider = false;
 
     private final List<OnConfigurationChangedListener> mOnConfigurationChangedListeners =
             new ArrayList<>();
@@ -228,49 +209,6 @@ public class QSPanel extends LinearLayout {
         mClippingRect.left = 0;
         mClippingRect.top = -1000;
         mHorizontalContentContainer.setClipBounds(mClippingRect);
-    }
-
-    /**
-     * Add brightness view above the tile layout.
-     *
-     * Used to add the brightness slider after construction.
-     */
-    public void setBrightnessView(@NonNull View view) {
-        if (mBrightnessView != null) {
-            removeView(mBrightnessView);
-            mMovableContentStartIndex--;
-        }
-        mBrightnessView = view;
-        mAutoBrightnessView = view.findViewById(R.id.brightness_icon);
-        if (mAutoBrightnessView != null) {
-            mAutoBrightnessView.setVisibility(mShouldShowAutoBrightness ? View.VISIBLE : View.GONE);
-        }
-        setBrightnessViewMargin(mTop);
-        if (mBrightnessView != null) {
-            addView(mBrightnessView);
-            mMovableContentStartIndex++;
-        }
-    }
-
-    private void setBrightnessViewMargin(boolean top) {
-        if (mBrightnessView != null) {
-            MarginLayoutParams lp = (MarginLayoutParams) mBrightnessView.getLayoutParams();
-            if (top) {
-                lp.topMargin = mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.qs_top_brightness_margin_top);
-                lp.bottomMargin = mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.qs_top_brightness_margin_bottom);
-            } else {
-                lp.topMargin = mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.qs_bottom_brightness_margin_top);
-                lp.bottomMargin = mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.qs_bottom_brightness_margin_bottom);
-            }
-            if (mBrightnessView != null) {
-                mBrightnessView.setVisibility(mShowQsBrightnessSlider ? VISIBLE : GONE);
-            }
-            mBrightnessView.setLayoutParams(lp);
-        }
     }
 
     /** */
@@ -391,16 +329,6 @@ public class QSPanel extends LinearLayout {
         return TAG;
     }
 
-    public void setBrightnessRunnable(Runnable runnable) {
-        mBrightnessRunnable = runnable;
-    }
-
-
-    @Nullable
-    View getBrightnessView() {
-        return mBrightnessView;
-    }
-
     /**
      * Links the footer's page indicator, which is used in landscape orientation to save space.
      *
@@ -426,7 +354,6 @@ public class QSPanel extends LinearLayout {
     public void updateResources() {
         updatePadding();
         updatePageIndicator();
-        setBrightnessViewMargin(mTop);
         if (mTileLayout != null) {
             mTileLayout.updateResources();
         }
@@ -495,19 +422,9 @@ public class QSPanel extends LinearLayout {
     private void switchAllContentToParent(ViewGroup parent, QSTileLayout newLayout) {
         int index = parent == this ? mMovableContentStartIndex : 0;
 
-        if (mBrightnessView != null && mTop) {
-            switchToParent(mBrightnessView, parent, index);
-            index++;
-        }
-
         // Let's first move the tileLayout to the new parent, since that should come first.
         switchToParent((View) newLayout, parent, index);
         index++;
-
-        if (mBrightnessView != null && !mTop) {
-            switchToParent(mBrightnessView, parent, index);
-            index++;
-        }
 
         if (mFooter != null) {
             // Then the footer with the settings
@@ -651,9 +568,6 @@ public class QSPanel extends LinearLayout {
             ViewGroup newParent = horizontal ? mHorizontalContentContainer : this;
             switchAllContentToParent(newParent, mTileLayout);
             updateResources();
-            if (mBrightnessRunnable != null) {
-                mBrightnessRunnable.run();
-            }
             if (needsDynamicRowsAndColumns()) {
                 mTileLayout.setMinRows(horizontal ? 2 : 1);
                 mTileLayout.setMaxColumns(horizontal ? 2 : 6);
@@ -668,16 +582,6 @@ public class QSPanel extends LinearLayout {
         updateMediaHostContentMargins(mediaHostView);
         updateHorizontalLinearLayoutMargins();
         updatePadding();
-    }
-
-    protected void updateBrightnessSliderPosition() {
-        if (mBrightnessView == null) return;
-        ViewGroup newParent = mUsingHorizontalLayout ? mHorizontalContentContainer : this;
-        switchAllContentToParent(newParent, mTileLayout);
-        updateResources();
-        if (mBrightnessRunnable != null) {
-            mBrightnessRunnable.run();
-        }
     }
 
     /**

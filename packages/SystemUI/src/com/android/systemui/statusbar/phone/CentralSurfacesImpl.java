@@ -1439,20 +1439,10 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
                             .withPlugin(QS.class)
                             .withDefault(this::createDefaultQSFragment)
                             .build());
-            mBrightnessMirrorController = new BrightnessMirrorController(
-                    getNotificationShadeWindowView(),
-                    mShadeSurface,
-                    mNotificationShadeDepthControllerLazy.get(),
-                    mBrightnessSliderFactory,
-                    (visible) -> {
-                        mBrightnessMirrorVisible = visible;
-                        updateScrimController();
-                    });
             fragmentHostManager.addTagListener(QS.TAG, (tag, f) -> {
                 QS qs = (QS) f;
                 if (qs instanceof QSFragment) {
                     mQSPanelController = ((QSFragment) qs).getQSPanelController();
-                    ((QSFragment) qs).setBrightnessMirrorController(mBrightnessMirrorController);
                 }
             });
         }
@@ -2278,9 +2268,6 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
 
         if (mShadeSurface != null) {
             mShadeSurface.updateResources();
-        }
-        if (mBrightnessMirrorController != null) {
-            mBrightnessMirrorController.updateResources();
         }
         if (mStatusBarKeyguardViewManager != null) {
             mStatusBarKeyguardViewManager.updateResources();
@@ -3300,8 +3287,6 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
             ScrimState state = mStatusBarKeyguardViewManager.primaryBouncerNeedsScrimming()
                     ? ScrimState.BOUNCER_SCRIMMED : ScrimState.BOUNCER;
             mScrimController.transitionTo(state);
-        } else if (mBrightnessMirrorVisible) {
-            mScrimController.transitionTo(ScrimState.BRIGHTNESS_MIRROR);
         } else if (mState == StatusBarState.SHADE_LOCKED) {
             mScrimController.transitionTo(ScrimState.SHADE_LOCKED);
         } else if (mDozeServiceHost.isPulsing()) {
@@ -3694,10 +3679,6 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
 
         @Override
         public void onDensityOrFontScaleChanged() {
-            // TODO: Remove this.
-            if (mBrightnessMirrorController != null) {
-                mBrightnessMirrorController.onDensityOrFontScaleChanged();
-            }
             // TODO: Bring these out of CentralSurfaces.
             mUserInfoControllerImpl.onDensityOrFontScaleChanged();
             mNotificationIconAreaController.onDensityOrFontScaleChanged(mContext);
@@ -3706,9 +3687,6 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
 
         @Override
         public void onThemeChanged() {
-            if (mBrightnessMirrorController != null) {
-                mBrightnessMirrorController.onOverlayChanged();
-            }
             // We need the new R.id.keyguard_indication_area before recreating
             // mKeyguardIndicationController
             mShadeSurface.onThemeChanged();
@@ -3724,9 +3702,6 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
 
         @Override
         public void onUiModeChanged() {
-            if (mBrightnessMirrorController != null) {
-                mBrightnessMirrorController.onUiModeChanged();
-            }
         }
     };
 

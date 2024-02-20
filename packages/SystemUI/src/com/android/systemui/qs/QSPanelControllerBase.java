@@ -492,11 +492,6 @@ public abstract class QSPanelControllerBase<T extends QSPanel> extends ViewContr
         mUsingHorizontalLayoutChangedListener = listener;
     }
 
-    @Nullable
-    public View getBrightnessView() {
-        return mView.getBrightnessView();
-    }
-
     /**
      * Set a listener to collapse/expand QS.
      * @param action

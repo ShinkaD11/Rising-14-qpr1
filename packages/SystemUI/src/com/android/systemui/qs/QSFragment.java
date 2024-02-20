@@ -544,12 +544,6 @@ public class QSFragment extends LifecycleFragment implements QS, CommandQueue.Ca
         return mQSPanelController;
     }
 
-    public void setBrightnessMirrorController(
-            BrightnessMirrorController brightnessMirrorController) {
-        mQSPanelController.setBrightnessMirror(brightnessMirrorController);
-        mQuickQSPanelController.setBrightnessMirror(brightnessMirrorController);
-    }
-
     @Override
     public boolean isShowingDetail() {
         return mQSCustomizerController.isCustomizing();

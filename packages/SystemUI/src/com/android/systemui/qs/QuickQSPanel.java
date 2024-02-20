@@ -44,58 +44,16 @@ public class QuickQSPanel extends QSPanel {
 
     private boolean mDisabledByPolicy;
     private int mMaxTiles;
-    private boolean mShowQqsBrightnessSlider = false;
 
     public QuickQSPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         mMaxTiles = getResources().getInteger(R.integer.quick_qs_panel_max_tiles);
-        mShouldShowAutoBrightness = false;
     }
 
     @Override
     protected void setHorizontalContentContainerClipping() {
         mHorizontalContentContainer.setClipToPadding(false);
         mHorizontalContentContainer.setClipChildren(false);
-    }
-
-
-    @Override
-    public void setBrightnessView(@NonNull View view) {
-        if (mBrightnessView != null) {
-            removeView(mBrightnessView);
-        }
-        mBrightnessView = view;
-        mAutoBrightnessView = view.findViewById(R.id.brightness_icon);
-        if (mAutoBrightnessView != null) {
-            mAutoBrightnessView.setVisibility(mShouldShowAutoBrightness ? View.VISIBLE : View.GONE);
-        }
-        setBrightnessViewMargin(mTop);
-        if (mBrightnessView != null) {
-            addView(mBrightnessView);
-        }
-    }
-
-    View getBrightnessView() {
-        return mBrightnessView;
-    }
-
-    private void setBrightnessViewMargin(boolean top) {
-        if (mBrightnessView != null) {
-            MarginLayoutParams lp = (MarginLayoutParams) mBrightnessView.getLayoutParams();
-            if (top) {
-                lp.topMargin = mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.qqs_top_brightness_margin_top);
-                lp.bottomMargin = mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.qqs_top_brightness_margin_bottom);
-            } else {
-                lp.topMargin = mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.qqs_bottom_brightness_margin_top);
-                lp.bottomMargin = mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.qqs_bottom_brightness_margin_bottom);
-            }
-            mBrightnessView.setVisibility(mShowQqsBrightnessSlider ? VISIBLE : GONE);
-            mBrightnessView.setLayoutParams(lp);
-        }
     }
 
     @Override
@@ -132,7 +90,6 @@ public class QuickQSPanel extends QSPanel {
                 getPaddingTop(),
                 getPaddingEnd(),
                 bottomPadding);
-        setBrightnessViewMargin(mTop);
     }
 
     @Override
