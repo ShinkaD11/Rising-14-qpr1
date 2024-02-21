@@ -3071,9 +3071,10 @@ public class OomAdjuster {
                             try {
                                 // Reset UI pipeline to SCHED_OTHER 
                                 mService.scheduleAsRegularPriority(app.getPid(),
-                                        state.getSavedPriority(), /* suppressLogs */ true);
+                                        0, /* suppressLogs */ true);
+                                setThreadPriority(app.getPid(), state.getSavedPriority());
                                 if (renderThreadTid != 0) {
-                                    mService.scheduleAsRegularPriority(renderThreadTid, THREAD_PRIORITY_DISPLAY, true);
+                                    mService.scheduleAsRegularPriority(renderThreadTid, 0, true);
                                 }
                             } catch (Exception e) {
                                 Slog.w(TAG,
