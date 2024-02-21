@@ -7948,9 +7948,7 @@ public class ActivityManagerService extends IActivityManager.Stub
                 // promote to FIFO now
                 if (proc.mState.getCurrentSchedulingGroup() == ProcessList.SCHED_GROUP_TOP_APP) {
                     if (DEBUG_OOM_ADJ) Slog.d("UI_FIFO", "Promoting " + tid + "out of band");
-                    // Always boost the main/render thread for regular apps
-                    final int rtid = proc.getRenderThreadTid();
-                    scheduleAsFifoPriority(rtid, Process.isAppRegular(rtid) ? THREAD_PRIORITY_TOP_APP_BOOST : 1, /*noLogs*/true);
+                    scheduleAsFifoPriority(proc.getRenderThreadTid(), 1, /*noLogs*/true);
                 }
             }
         }
