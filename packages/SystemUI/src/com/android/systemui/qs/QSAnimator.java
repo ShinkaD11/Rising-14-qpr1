@@ -698,6 +698,12 @@ public class QSAnimator implements QSHost.Callback, PagedTileLayout.PageListener
         if (mBrightnessTranslationAnimator != null) {
             mBrightnessTranslationAnimator.setPosition(position);
         }
+        if (mQsControlsOpacityAnimator != null) {
+            mQsControlsOpacityAnimator.setPosition(position);
+        }
+        if (mQsControlsTranslationAnimator != null) {
+            mQsControlsTranslationAnimator.setPosition(position);
+        }
         if (mQQSFooterActionsAnimator != null) {
             mQQSFooterActionsAnimator.setPosition(position);
         }
