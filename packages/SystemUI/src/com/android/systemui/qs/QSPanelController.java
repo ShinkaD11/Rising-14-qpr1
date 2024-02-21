@@ -40,6 +40,10 @@ import com.android.systemui.statusbar.phone.StatusBarKeyguardViewManager;
 import com.android.systemui.tuner.TunerService;
 import com.android.systemui.util.settings.SystemSettings;
 
+import com.android.systemui.media.dialog.MediaOutputDialogFactory;
+import com.android.systemui.plugins.ActivityStarter;
+import com.android.systemui.statusbar.NotificationMediaManager;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -76,7 +80,10 @@ public class QSPanelController extends QSPanelControllerBase<QSPanel> {
             QSLogger qsLogger,
             FalsingManager falsingManager,
             StatusBarKeyguardViewManager statusBarKeyguardViewManager,
-            @Main Handler mainHandler, SystemSettings systemSettings) {
+            @Main Handler mainHandler, SystemSettings systemSettings,
+            ActivityStarter activityStarter, 
+            NotificationMediaManager notificationMediaManager,
+            MediaOutputDialogFactory mediaOutputDialogFactory) {
         super(view, qsHost, qsCustomizerController, usingMediaPlayer, mediaHost,
                 metricsLogger, uiEventLogger, qsLogger, dumpManager,
                 mainHandler, systemSettings);
@@ -85,6 +92,10 @@ public class QSPanelController extends QSPanelControllerBase<QSPanel> {
         mQsTileRevealControllerFactory = qsTileRevealControllerFactory;
         mFalsingManager = falsingManager;
         mStatusBarKeyguardViewManager = statusBarKeyguardViewManager;
+        mView.getQsControlView()
+            .injectDependencies(
+                activityStarter, falsingManager,
+                notificationMediaManager, mediaOutputDialogFactory);
     }
 
     @Override
@@ -218,6 +229,10 @@ public class QSPanelController extends QSPanelControllerBase<QSPanel> {
 
     public int getPaddingBottom() {
         return mView.getPaddingBottom();
+    }
+    
+    QsControlsView getQsControlView() {
+        return mView.getQsControlView();
     }
 }
 

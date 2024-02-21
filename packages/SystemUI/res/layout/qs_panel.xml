@@ -42,6 +42,8 @@
             android:paddingTop="@dimen/custom_qs_panel_padding_top"
             android:clipToPadding="false"
             android:clipChildren="false">
+            
+             <include layout="@layout/qs_controls_layout" />
 
             <include layout="@layout/qs_footer_impl" />
 

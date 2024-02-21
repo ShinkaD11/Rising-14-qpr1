@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/carrier_group"
-            app:layout_constraintBottom_toTopOf="@id/qs_controls_container" /> 
+            app:layout_constraintBottom_toBottomOf="@id/parent" /> 
     </Constraint>
 
     <!-- ShadeHeaderController helps with managing clock width to layout this view -->
@@ -85,19 +85,6 @@
             app:layout_constraintTop_toTopOf="@id/date"
             app:layout_constraintBottom_toBottomOf="@id/date"
             />
-    </Constraint>
-
-    <Constraint
-        android:id="@+id/qs_controls_container">
-        <Layout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/date"
-            app:layout_constraintBottom_toBottomOf="parent" />
-        <PropertySet
-            android:alpha="1" />
     </Constraint>
 
 </ConstraintSet>

@@ -51,12 +51,9 @@ import com.android.systemui.dagger.SysUISingleton
 import com.android.systemui.demomode.DemoMode
 import com.android.systemui.demomode.DemoModeController
 import com.android.systemui.dump.DumpManager
-import com.android.systemui.media.dialog.MediaOutputDialogFactory
 import com.android.systemui.plugins.ActivityStarter
-import com.android.systemui.plugins.FalsingManager
 import com.android.systemui.qs.ChipVisibilityListener
 import com.android.systemui.qs.HeaderPrivacyIconsController
-import com.android.systemui.qs.QsControlsView
 import com.android.systemui.shade.ShadeHeaderController.Companion.HEADER_TRANSITION_ID
 import com.android.systemui.shade.ShadeHeaderController.Companion.LARGE_SCREEN_HEADER_CONSTRAINT
 import com.android.systemui.shade.ShadeHeaderController.Companion.LARGE_SCREEN_HEADER_TRANSITION_ID
@@ -113,9 +110,6 @@ constructor(
     private val activityStarter: ActivityStarter,
     private val statusOverlayHoverListenerFactory: StatusOverlayHoverListenerFactory,
     private val tunerService: TunerService,
-    private val falsingManager: FalsingManager,
-    private val notificationMediaManager: NotificationMediaManager,
-    private val mediaOutputDialogFactory: MediaOutputDialogFactory,
 ) : ViewController<View>(header), Dumpable {
 
     companion object {
@@ -167,8 +161,6 @@ constructor(
     private val iconContainer: StatusIconContainer = header.requireViewById(R.id.statusIcons)
     private val mShadeCarrierGroup: ShadeCarrierGroup = header.requireViewById(R.id.carrier_group)
     private val systemIcons: View = header.requireViewById(R.id.shade_header_system_icons)
-    private val qsControlsView: View = header.requireViewById(R.id.qs_controls)
-    private val qsControls = qsControlsView as QsControlsView
 
     private var sbPaddingLeft = 0
     private var sbPaddingRight = 0
@@ -227,7 +219,6 @@ constructor(
         set(value) {
             if (qsVisible && field != value) {
                 header.alpha = ShadeInterpolation.getContentAlpha(value)
-                qsControlsView.alpha = ShadeInterpolation.getContentAlpha(value)
                 field = value
             }
         }
@@ -319,12 +310,10 @@ constructor(
                 updateResources()
                 updateCarrierGroupPadding()
                 clock.onDensityOrFontScaleChanged()
-                qsControls.updateResources()
             }
 
             override fun onUiModeChanged() {
                 updateResources()
-                qsControls.updateResources()
             }
         }
 
@@ -417,11 +406,6 @@ constructor(
         systemIcons.setOnHoverListener(
             statusOverlayHoverListenerFactory.createListener(systemIcons)
         )
-        qsControls.injectDependencies(
-            activityStarter, 
-            falsingManager, 
-            notificationMediaManager, 
-            mediaOutputDialogFactory)
     }
 
     override fun onViewDetached() {
@@ -553,7 +537,6 @@ constructor(
             }
         if (header.visibility != visibility) {
             header.visibility = visibility
-            qsControlsView.visibility = visibility
             visible = visibility == View.VISIBLE
         }
     }

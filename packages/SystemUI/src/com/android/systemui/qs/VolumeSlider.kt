@@ -25,10 +25,11 @@ import android.widget.ImageView
 
 import com.android.systemui.R
 
-class VolumeSlider(context: Context, attrs: AttributeSet? = null) : VerticalSlider(context, attrs) {
+class VolumeSlider(context: Context, attrs: AttributeSet? = null) : VerticalSlider(context, attrs), UserInteractionListener {
 
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var volumeIcon: ImageView? = null
+    private var isUserInterAction = false
 
     private val volumeChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -39,6 +40,21 @@ class VolumeSlider(context: Context, attrs: AttributeSet? = null) : VerticalSlid
                 updateProgressRect()
             }
         }
+    }
+
+    init {
+        addUserInteractionListener(this)
+    }
+
+    override fun onUserInteractionStart() {
+        isUserInterAction = true
+    }
+
+    override fun onUserInteractionEnd() {
+        isUserInterAction = false
+    }
+
+    override fun onLongPress() {
     }
 
     override fun onFinishInflate() {
@@ -61,17 +77,22 @@ class VolumeSlider(context: Context, attrs: AttributeSet? = null) : VerticalSlid
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        context.unregisterReceiver(volumeChangeReceiver)
+    }
+
+    private fun updateVolume() {
+        if (isUserInterAction) {
+            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            val volume = progress * maxVolume / 100
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0)
+        }
     }
 
     override fun updateProgressRect() {
         super.updateProgressRect()
-        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        val volume = progress * maxVolume / 100
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0)
+        updateVolume()
         volumeIcon?.let { updateIconTint(it) }
     }
-    
+
     override fun updateSliderPaint() {
         super.updateSliderPaint()
         volumeIcon?.let { updateIconTint(it) }

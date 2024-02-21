@@ -101,6 +101,9 @@ public class QSPanel extends LinearLayout {
     protected View mFooter;
 
     @Nullable
+    protected View mQsControlView;
+
+    @Nullable
     private PageIndicator mFooterPageIndicator;
     private int mContentMarginStart;
     private int mContentMarginEnd;
@@ -329,6 +332,10 @@ public class QSPanel extends LinearLayout {
         return TAG;
     }
 
+    QsControlsView getQsControlView() {
+        return (QsControlsView) mQsControlView;
+    }
+
     /**
      * Links the footer's page indicator, which is used in landscape orientation to save space.
      *
@@ -388,6 +395,10 @@ public class QSPanel extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mFooter = findViewById(R.id.qs_footer);
+        mQsControlView = findViewById(R.id.qs_controls);
+        if(mQsControlView != null) {
+            mMovableContentStartIndex++;
+        }
     }
 
     private void updateHorizontalLinearLayoutMargins() {
@@ -421,6 +432,11 @@ public class QSPanel extends LinearLayout {
 
     private void switchAllContentToParent(ViewGroup parent, QSTileLayout newLayout) {
         int index = parent == this ? mMovableContentStartIndex : 0;
+
+        if (mQsControlView != null) {
+            switchToParent(mQsControlView, parent, index);
+            index++;
+        }
 
         // Let's first move the tileLayout to the new parent, since that should come first.
         switchToParent((View) newLayout, parent, index);

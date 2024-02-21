@@ -353,8 +353,14 @@ public class QsControlsView extends FrameLayout {
     }
 
     private Bitmap getScaledRoundedBitmap(Bitmap bitmap, int width, int height) {
+        if (bitmap == null || width <= 0 || height <= 0) {
+            return null;
+        }
         float radius = mContext.getResources().getDimensionPixelSize(R.dimen.qs_controls_slider_corner_radius);
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+        if (scaledBitmap == null) {
+            return null;
+        }
         Bitmap output = Bitmap.createBitmap(scaledBitmap.getWidth(), scaledBitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
         Paint paint = new Paint();

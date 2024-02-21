@@ -18,8 +18,8 @@
     <dimen name="qs_controls_tile_height">150dp</dimen>
     <dimen name="qs_controls_tile_container_margin_start">8dp</dimen>
     <dimen name="qs_controls_tile_container_margin_end">8dp</dimen>
-    <dimen name="qqs_header_offset_top">48dp</dimen>
-    <dimen name="qqs_control_header_height">240dp</dimen>
+    <dimen name="qqs_header_offset_top">0dp</dimen>
+    <dimen name="qqs_control_header_height">48dp</dimen>
     <dimen name="qs_controls_margin_bottom">8dp</dimen>
     <dimen name="qs_controls_container_radius">28dp</dimen>
     <dimen name="qs_controls_tile_size">24dp</dimen>

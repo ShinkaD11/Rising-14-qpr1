@@ -56,6 +56,10 @@ public class QuickQSPanel extends QSPanel {
         mHorizontalContentContainer.setClipChildren(false);
     }
 
+    QsControlsView getQsControlView() {
+        return (QsControlsView) mQsControlView;
+    }
+
     @Override
     void initialize(QSLogger qsLogger) {
         super.initialize(qsLogger);

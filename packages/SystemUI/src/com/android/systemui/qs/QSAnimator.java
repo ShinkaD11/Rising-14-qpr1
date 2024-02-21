@@ -115,6 +115,10 @@ public class QSAnimator implements QSHost.Callback, PagedTileLayout.PageListener
     // Brightness slider translation driver, uses mQSExpansionPathInterpolator.yInterpolator
     @Nullable
     private TouchAnimator mBrightnessTranslationAnimator;
+    @Nullable
+    private TouchAnimator mQsControlsTranslationAnimator;
+    @Nullable
+    private TouchAnimator mQsControlsOpacityAnimator;
     // Brightness slider opacity driver. Uses linear interpolator.
     @Nullable
     private TouchAnimator mBrightnessOpacityAnimator;
@@ -445,6 +449,8 @@ public class QSAnimator implements QSHost.Callback, PagedTileLayout.PageListener
             }
         }
 
+        animateQsControlsSlider();
+
         mFirstPageAnimator = firstPageBuilder
                 // Fade in the tiles/labels as we reach the final position.
                 .addFloat(tileLayout, "alpha", 0, 1)
@@ -567,6 +573,43 @@ public class QSAnimator implements QSHost.Callback, PagedTileLayout.PageListener
         }
         builder.addFloat(alphaDelayedBuilder.build(), "position", 0, 1);
         return new Pair<>(animator, builder.build());
+    }
+
+    private void animateQsControlsSlider() {
+        mQsControlsTranslationAnimator = null;
+        mQsControlsOpacityAnimator = null;
+        final View qsQsControls = (View) mQsPanelController.getQsControlView();
+        final View qqsQsControls = (View) mQuickQSPanelController.getQsControlView();
+
+        if (qqsQsControls != null && qqsQsControls.getVisibility() == View.VISIBLE) {
+            mAnimatedQsViews.add(qsQsControls);
+            mAllViews.add(qqsQsControls);
+            int translationY = getRelativeTranslationY(qsQsControls, qqsQsControls);
+            mQsControlsTranslationAnimator = new Builder()
+                    .addFloat(qqsQsControls, "translationY", 0, translationY)
+                    .setInterpolator(mQSExpansionPathInterpolator.getYInterpolator())
+                    .setInterpolator(mQuickQSPanelController.mMediaHost.getVisible() ?
+                            Interpolators.ALPHA_OUT : com.android.wm.shell.animation.Interpolators.SLOWDOWN_INTERPOLATOR)
+                    .build();
+        } else if (qsQsControls != null) {
+            View quickSettingsRootView = mQs.getView();
+            View qsTileLayout = (View) mQsPanelController.getTileLayout();
+            View qqsTileLayout = (View) mQuickQSPanelController.getTileLayout();
+            getRelativePosition(mTmpLoc1, qsTileLayout, quickSettingsRootView);
+            getRelativePosition(mTmpLoc2, qqsTileLayout, quickSettingsRootView);
+            int tileMovement = mTmpLoc2[1] - mTmpLoc1[1];
+            float scaleCompensation = qsQsControls.getMeasuredHeight() * 0.5f;
+            mQsControlsTranslationAnimator = new Builder()
+                    .addFloat(qsQsControls, "translationY", scaleCompensation + tileMovement, 0)
+                    .setInterpolator(mQSExpansionPathInterpolator.getYInterpolator())
+                    .build();
+            mQsControlsOpacityAnimator = new Builder()
+                    .addFloat(qsQsControls, "alpha", 0, 1)
+                    .setStartDelay(0.2f)
+                    .setEndDelay(1 - 0.5f)
+                    .build();
+            mAllViews.add(qsQsControls);
+        }
     }
 
     private int getRelativeTranslationY(View view1, View view2) {
