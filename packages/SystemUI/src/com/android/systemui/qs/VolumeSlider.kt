@@ -71,7 +71,7 @@ class VolumeSlider(context: Context, attrs: AttributeSet? = null) : VerticalSlid
         context.registerReceiver(volumeChangeReceiver, filter)
         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        progress = (currentVolume * 100 / maxVolume)
+        progress = (currentVolume / maxVolume) * 100
         updateProgressRect()
     }
 
@@ -82,7 +82,7 @@ class VolumeSlider(context: Context, attrs: AttributeSet? = null) : VerticalSlid
     private fun updateVolume() {
         if (isUserInterAction) {
             val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-            val volume = progress * maxVolume / 100
+            val volume = maxVolume * progress / 100
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0)
         }
     }

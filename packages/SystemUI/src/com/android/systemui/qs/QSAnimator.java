@@ -25,6 +25,7 @@ import android.view.View.OnAttachStateChangeListener;
 import android.view.View.OnLayoutChangeListener;
 
 import androidx.annotation.Nullable;
+import androidx.viewpager.widget.ViewPager;
 
 import com.android.app.animation.Interpolators;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -578,8 +579,10 @@ public class QSAnimator implements QSHost.Callback, PagedTileLayout.PageListener
     private void animateQsControlsSlider() {
         mQsControlsTranslationAnimator = null;
         mQsControlsOpacityAnimator = null;
-        final View qsQsControls = (View) mQsPanelController.getQsControlView();
-        final View qqsQsControls = (View) mQuickQSPanelController.getQsControlView();
+        QsControlsView qsQsControlsView = mQsPanelController.getQsControlView();
+        QsControlsView qqsQsControlsView = mQuickQSPanelController.getQsControlView();
+        final View qsQsControls = (View) qsQsControlsView;
+        final View qqsQsControls = (View) qqsQsControlsView;
 
         if (qqsQsControls != null && qqsQsControls.getVisibility() == View.VISIBLE) {
             mAnimatedQsViews.add(qsQsControls);
@@ -591,10 +594,20 @@ public class QSAnimator implements QSHost.Callback, PagedTileLayout.PageListener
                     .setInterpolator(mQuickQSPanelController.mMediaHost.getVisible() ?
                             Interpolators.ALPHA_OUT : com.android.wm.shell.animation.Interpolators.SLOWDOWN_INTERPOLATOR)
                     .build();
+            ViewPager qsPager = qsQsControlsView.getViewPager();
+            int qqsPosition = qqsQsControlsView.getViewPager().getCurrentItem();
+            qsPager.setCurrentItem(qqsPosition, true);
+            qsQsControlsView.updateSliderProgress();
+            qsQsControlsView.updateMediaPlaybackState();
         } else if (qsQsControls != null) {
             View quickSettingsRootView = mQs.getView();
             View qsTileLayout = (View) mQsPanelController.getTileLayout();
             View qqsTileLayout = (View) mQuickQSPanelController.getTileLayout();
+            ViewPager qqsPager = qqsQsControlsView.getViewPager();
+            int qsPosition = qsQsControlsView.getViewPager().getCurrentItem();
+            qqsPager.setCurrentItem(qsPosition, true);
+            qqsQsControlsView.updateSliderProgress();
+            qqsQsControlsView.updateMediaPlaybackState();
             getRelativePosition(mTmpLoc1, qsTileLayout, quickSettingsRootView);
             getRelativePosition(mTmpLoc2, qqsTileLayout, quickSettingsRootView);
             int tileMovement = mTmpLoc2[1] - mTmpLoc1[1];
@@ -609,6 +622,25 @@ public class QSAnimator implements QSHost.Callback, PagedTileLayout.PageListener
                     .setEndDelay(1 - 0.5f)
                     .build();
             mAllViews.add(qsQsControls);
+        }
+    }
+
+    private void updateQsControls(float position) {
+        QsControlsView qsQsControlsView = mQsPanelController.getQsControlView();
+        QsControlsView qqsQsControlsView = mQuickQSPanelController.getQsControlView();
+        if (qsQsControlsView == null || qqsQsControlsView == null) return;
+        if (position == 1.0f) {
+            int qqsPosition = qqsQsControlsView.getViewPager().getCurrentItem();
+            qsQsControlsView.getViewPager().setCurrentItem(qqsPosition, true);
+            qsQsControlsView.updatePages(qqsPosition);
+            qsQsControlsView.updateSliderProgress();
+            qsQsControlsView.updateMediaPlaybackState();
+        } else if (position == 0.0f) {
+            int qsPosition = qsQsControlsView.getViewPager().getCurrentItem();
+            qqsQsControlsView.getViewPager().setCurrentItem(qsPosition, true);
+            qqsQsControlsView.updatePages(qsPosition);
+            qqsQsControlsView.updateSliderProgress();
+            qqsQsControlsView.updateMediaPlaybackState();
         }
     }
 
@@ -707,6 +739,7 @@ public class QSAnimator implements QSHost.Callback, PagedTileLayout.PageListener
         if (mQQSFooterActionsAnimator != null) {
             mQQSFooterActionsAnimator.setPosition(position);
         }
+        updateQsControls(position);
     }
 
     @Override

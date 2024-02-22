@@ -284,7 +284,7 @@ public class QsControlsView extends FrameLayout {
         }
     }
 
-    private void updateMediaPlaybackState() {
+    public void updateMediaPlaybackState() {
         updateMediaMetadata();
         scheduleMetadataChecks(3, mMediaActive);
     }
@@ -403,23 +403,31 @@ public class QsControlsView extends FrameLayout {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
             @Override
             public void onPageSelected(int position) {
-                if (position == 0) {
-                    mMediaLayout.setVisibility(View.VISIBLE);
-                    mAccessLayout.setVisibility(View.GONE);
-                    mWidgetsLayout.setVisibility(View.GONE);
-                } else if (position == 1) {
-                    mMediaLayout.setVisibility(View.GONE);
-                    mAccessLayout.setVisibility(View.VISIBLE);
-                    mWidgetsLayout.setVisibility(View.GONE);
-                } else if (position == 2) {
-                    mMediaLayout.setVisibility(View.GONE);
-                    mAccessLayout.setVisibility(View.GONE);
-                    mWidgetsLayout.setVisibility(View.VISIBLE);
-                }
+                updatePages(position);
             }
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
+    }
+    
+    public ViewPager getViewPager() {
+        return mViewPager;
+    }
+    
+    public void updatePages(int position) {
+        if (position == 0) {
+            mMediaLayout.setVisibility(View.VISIBLE);
+            mAccessLayout.setVisibility(View.GONE);
+            mWidgetsLayout.setVisibility(View.GONE);
+        } else if (position == 1) {
+            mMediaLayout.setVisibility(View.GONE);
+            mAccessLayout.setVisibility(View.VISIBLE);
+            mWidgetsLayout.setVisibility(View.GONE);
+        } else if (position == 2) {
+            mMediaLayout.setVisibility(View.GONE);
+            mAccessLayout.setVisibility(View.GONE);
+            mWidgetsLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     public void updateColors() {
@@ -492,6 +500,13 @@ public class QsControlsView extends FrameLayout {
 	        }
         }
     };
+    
+    public void updateSliderProgress() {
+        if (mBrightnessSlider != null && mVolumeSlider != null) {
+            ((BrightnessSlider) mBrightnessSlider).updateProgressRect();
+            ((VolumeSlider) mVolumeSlider).updateProgressRect();
+        }
+    }
 
     public void updateResources() {
         if (mBrightnessSlider != null && mVolumeSlider != null) {

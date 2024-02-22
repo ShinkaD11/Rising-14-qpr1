@@ -204,7 +204,7 @@ open class VerticalSlider(context: Context, attrs: AttributeSet? = null) : CardV
     }
 
     fun updateIconTint(view: ImageView?) {
-        val emptyThreshold = max * 0.2
+        val emptyThreshold = max * 0.15
         val isEmpty = progress <= emptyThreshold
         val iconColor = if (isEmpty) {
             if (isNightMode)
